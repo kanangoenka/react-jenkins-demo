@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "NodeJS"
+    }
+
     stages {
 
         stage('Clone Repository') {
@@ -12,30 +16,36 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test -- --watchAll=false'
+                bat 'npm test -- --watchAll=false'
+            }
+        }
+
+        stage('Archive Build') {
+            steps {
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo 'Build completed successfully!'
+            echo 'Build Successful'
         }
 
         failure {
-            echo 'Build failed!'
+            echo 'Build Failed'
         }
 
         always {
